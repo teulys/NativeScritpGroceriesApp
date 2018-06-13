@@ -23,12 +23,28 @@ export class UserService {
                 email: user.email,
                 password: user.password
             }),
-            { headers: this.getComminHeaders() }
+            { headers: this.getCommonHeaders() }
         )
         .catch(this.handleErrors);
     }
 
-    getComminHeaders(){
+    login(user: User) {
+        return this.http.post(
+          Config.apiUrl + "user/" + Config.appKey + "/login",
+          JSON.stringify({
+            username: user.email,
+            password: user.password
+          }),
+          { headers: this.getCommonHeaders() }
+        )
+        .map(response => response.json())
+        .do(data => {
+          Config.token = data._kmd.authtoken
+        })
+        .catch(this.handleErrors);
+    }
+
+    getCommonHeaders(){
         let headers = new Headers();
         headers.append("Content-Type", "application/json");
         headers.append("Authorization", Config.authHeader);
